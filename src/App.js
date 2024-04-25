@@ -1,25 +1,34 @@
-import logo from './logo.svg';
+import React, { useEffect, useContext } from 'react';
+import SearchBar from './SearchBar';
+import SearchResult from './SearchResult';
+import Pagination from './Pagination';
+import { AppContext } from './AppContext';
+import { fetchStories } from './api';
 import './App.css';
 
-function App() {
+
+const App = () => {
+  const { state, dispatch } = useContext(AppContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (state.query !== '') {
+        const data = await fetchStories(state.query, state.page);
+        dispatch({ type: 'SET_STORIES', payload: data.hits });
+      }
+    };
+
+    fetchData();
+  }, [state.query, state.page, dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Hacker News Search</h1>
+      <SearchBar />
+      <SearchResult />
+      <Pagination />
     </div>
   );
-}
+};
 
 export default App;
